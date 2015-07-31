@@ -84,13 +84,13 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      'git-add-dist': {
-        command: 'git add '
+      gitAddDist: {
+        command: 'git add .'
       },
-      'git-commit-build': {
+      gitCommitBuild: {
         command: 'git commit -am"build"'
       },
-     'heroku': {
+     heroku: {
         command: 'git push heroku master'
       }
     },
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
-      grunt.task.run(['shell:git-add-dist','shell:git-commit-build','shell:heroku']);
+      grunt.task.run(['shell:gitAddDist','shell:gitCommitBuild','shell:heroku']);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
