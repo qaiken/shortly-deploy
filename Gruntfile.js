@@ -84,13 +84,16 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      options: {
+        failOnError: true
+      },
       gitAddDist: {
         command: 'git add .'
       },
       gitCommitBuild: {
         command: 'git commit -am"build"'
       },
-     heroku: {
+      heroku: {
         command: 'git push heroku master'
       }
     },
