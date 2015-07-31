@@ -2,7 +2,19 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+
     concat: {
+      options: {
+        separator: ';',
+      },
+      dist: {
+        src: ['public/client/app.js','public/client/link.js','public/client/links.js','public/client/linkView.js', 'public/client/linksView.js', 'public/client/createLinkView.js','public/client/router.js'],
+        dest: 'public/dist/built.js'
+      },
+      lib: {
+        src: ['public/lib/jquery.js','public/lib/underscore.js','public/lib/handlebars.js','public/lib/backbone.js'],
+        dest: 'public/dist/lib.js'
+      }
     },
 
     mochaTest: {
@@ -21,14 +33,20 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      my_target: {
+        options: {
+          sourceMap: true
+        },
+        files: {
+          'public/dist/built.min.js': ['public/dist/built.js'],
+          'public/dist/lib.min.js': ['public/dist/lib.js']
+        }
+      }
     },
 
     jshint: {
-      files: [
-        // Add filespec list here
-      ],
+      all: ['Gruntfile.js', 'public/client/**/*.js'],
       options: {
-        force: 'true',
         jshintrc: '.jshintrc',
         ignores: [
           'public/lib/**/*.js',
@@ -38,6 +56,14 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      options: {
+        sourceMap: true
+      },
+      target: {
+        files: {
+          'public/style.min.css': ['public/*.css']
+        }
+      }
     },
 
     watch: {
@@ -58,7 +84,14 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      prodServer: {
+      'git-add-dist': {
+        command: 'git add '
+      },
+      'git-commit-build': {
+        command: 'git commit -am"build"'
+      },
+     'heroku': {
+        command: 'git push heroku master'
       }
     },
   });
@@ -94,18 +127,24 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'test',
+    'cssmin',
+    'jshint',
+    'concat',
+    'uglify'
   ]);
 
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
-      // add your production server task here
+      grunt.task.run(['shell:git-add-dist','shell:git-commit-build','shell:heroku']);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
   });
 
   grunt.registerTask('deploy', [
-    // add your deploy tasks here
+    'build',
+    'upload'
   ]);
 
 
